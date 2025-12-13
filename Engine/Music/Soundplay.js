@@ -1,4 +1,10 @@
-const audio = document.querySelector("audio");
-audio.play().catch(err => {
-  console.error("Playback failed:", err);
+document.querySelectorAll("audio").forEach(a => {
+  // Read the loop attribute from HTML
+  const loopAttr = a.getAttribute("loop");
+  a.loop = (loopAttr === "true"); // only true if explicitly set
+
+  // Play the audio
+  a.play().catch(err => {
+    console.error("Playback failed:", err);
+  });
 });
