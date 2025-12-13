@@ -5,97 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ideal Game Maker</title>
   <style>
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
-      margin: 0;
-      padding: 2rem;
-      background: #f4f6fa;
-      text-align: center;
-    }
-
-    .title {
-      font-size: clamp(2rem, 5vw, 4rem);
-      letter-spacing: 0.02em;
-      font-weight: 700;
-      color: darkblue;
-      text-shadow: 0 1px 0 #fff;
-      margin-bottom: 2rem;
-    }
-
-    button {
-      background: darkblue;
-      color: #fff;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      margin: 0.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-    button:hover { background: #003366; transform: scale(1.05); }
-    button:active { transform: scale(0.95); }
-
-    /* Modal styles */
-    .modal {
-      display: none; /* hidden by default */
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-content {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      text-align: center;
-      max-width: 300px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-    .modal-content h2 {
-      margin-top: 0;
-      color: darkblue;
-    }
+    body { font-family: system-ui, sans-serif; margin:0; padding:2rem; background:#f4f6fa; text-align:center; }
+    .title { font-size:clamp(2rem,5vw,4rem); font-weight:700; color:darkblue; margin-bottom:2rem; }
+    button { background:darkblue; color:#fff; border:none; padding:.75rem 1.5rem; margin:.5rem; font-size:1rem; font-weight:600; border-radius:6px; cursor:pointer; }
+    button:hover { background:#003366; }
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); align-items:center; justify-content:center; }
+    .modal-content { background:#fff; padding:2rem; border-radius:8px; text-align:center; max-width:300px; }
+    #editor { display:none; margin-top:2rem; }
+    #stage { border:2px solid darkblue; background:#fff; margin-top:1rem; }
+    .controls { margin:1rem auto; display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; }
+    .controls input, .controls select { padding:.5rem; }
   </style>
 </head>
 <body>
   <h1 class="title">Ideal Game Maker</h1>
   <button>Explorer</button>
-  <button>Create</button>
+  <button id="createBtn">Create</button>
   <button id="aboutBtn">About</button>
 
-  <!-- Modal -->
   <div id="aboutModal" class="modal">
     <div class="modal-content">
       <h2>Ideal Game Maker</h2>
       <p>by ported jagaur</p>
-      <p>
-    <a class="github-link" href="https://github.com/winer156win-sudo/Ideal-Gamer-Maker" target="_blank">
-      GitHub
-    </a>
-  </p>
+      <p><a href="https://github.com/winer156win-sudo/Ideal-Gamer-Maker" target="_blank">GitHub</a></p>
       <button id="okBtn">OK</button>
     </div>
   </div>
 
+  <div id="createModal" class="modal">
+    <div class="modal-content">
+      <h2>Create Game</h2>
+      <p>Choose game type:</p>
+      <button id="choose2D">2D</button>
+      <button id="choose3D">3D</button>
+    </div>
+  </div>
+
+  <div id="editor">
+    <h2>2D Game Editor</h2>
+    <div class="controls">
+      <input type="file" id="imgInput" accept="image/*">
+      <input type="text" id="textInput" placeholder="Enter text">
+      <input type="color" id="textColor" value="#ff0000">
+      <select id="textFont">
+        <option value="20px Arial">Arial 20px</option>
+        <option value="bold 24px Courier New">Courier Bold 24px</option>
+        <option value="italic 30px Georgia">Georgia Italic 30px</option>
+      </select>
+      <button id="addImgBtn">Add Image</button>
+      <button id="addTextBtn">Add Text</button>
+    </div>
+    <canvas id="stage" width="800" height="400"></canvas>
+  </div>
+
+  <script src="https://rawcdn.githack.com/winer156win-sudo/Ideal-Gamer-Maker/main/Engine/Draw/Drawfunction.js"></script>
+  <script src="https://rawcdn.githack.com/winer156win-sudo/Ideal-Gamer-Maker/main/Engine/Draw/Drawtext.js"></script>
+
   <script>
-    // Wait until the DOM is ready
     document.addEventListener("DOMContentLoaded", () => {
-      const aboutBtn = document.getElementById("aboutBtn");
-      const aboutModal = document.getElementById("aboutModal");
-      const okBtn = document.getElementById("okBtn");
+      const aboutBtn = document.getElementById("aboutBtn")
+      const aboutModal = document.getElementById("aboutModal")
+      const okBtn = document.getElementById("okBtn")
+      const createBtn = document.getElementById("createBtn")
+      const createModal = document.getElementById("createModal")
+      const choose2D = document.getElementById("choose2D")
+      const choose3D = document.getElementById("choose3D")
+      const editor = document.getElementById("editor")
+      const imgInput = document.getElementById("imgInput")
+      const textInput = document.getElementById("textInput")
+      const textColor = document.getElementById("textColor")
+      const textFont = document.getElementById("textFont")
+      const addImgBtn = document.getElementById("addImgBtn")
+      const addTextBtn = document.getElementById("addTextBtn")
+      const canvas = document.getElementById("stage")
+      const ctx = canvas.getContext("2d")
 
-      aboutBtn.addEventListener("click", () => {
-        aboutModal.style.display = "flex"; // show modal
-      });
+      aboutBtn.addEventListener("click", () => aboutModal.style.display = "flex")
+      okBtn.addEventListener("click", () => aboutModal.style.display = "none")
 
-      okBtn.addEventListener("click", () => {
-        aboutModal.style.display = "none"; // hide modal
-      });
-    });
+      createBtn.addEventListener("click", () => createModal.style.display = "flex")
+      choose2D.addEventListener("click", () => { createModal.style.display = "none"; editor.style.display = "block" })
+      choose3D.addEventListener("click", () => { createModal.style.display = "none"; alert("3D editor not yet implemented") })
+
+      addImgBtn.addEventListener("click", () => {
+        const file = imgInput.files[0]
+        if (!file) return
+        const img = new Image()
+        img.src = URL.createObjectURL(file)
+        img.onload = () => {
+          ctx.drawImage(img, 100, 100)
+        }
+      })
+
+      addTextBtn.addEventListener("click", () => {
+        const text = textInput.value.trim()
+        if (!text) return
+        ctx.font = textFont.value
+        ctx.fillStyle = textColor.value
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText(text, canvas.width/2, canvas.height/2)
+      })
+    })
   </script>
 </body>
 </html>
+
