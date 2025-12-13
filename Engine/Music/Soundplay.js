@@ -1,5 +1,5 @@
 document.querySelectorAll("audio").forEach(a => {
-  // Read the loop attribute from HTML
+  // Read the loop attribute from the engine
   const loopAttr = a.getAttribute("loop");
   a.loop = (loopAttr === "true"); // only true if explicitly set
 
